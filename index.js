@@ -43,10 +43,11 @@ module.exports = function(config) {
     });
   } else if (config.start) {
     return promise.spread(function(server, database) {
-      server.start(function(err) {
+      server.start(config.ready || function(err) {
         if (err) throw err;
         server.log(['info'], 'Server running at: ' + server.info.uri);
       });
+      return [server, database];
     });
   } else {
     promise.then = promise.spread;
