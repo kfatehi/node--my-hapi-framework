@@ -1,21 +1,27 @@
 # my-hapi-framework
-a super simple hapi "microframework". supports sequelize
+
+A super simple hapi "microframework".
+
+## Features
+
+* Sequelize Support (Sync, Force Sync, Hapi-compliant Logging)
+* Autoload Hapi Authentication Strategies
+* Autoload Hapi Plugins
+* Autoload Hapi Routes
+
+For more insight into how the auto-loading works see [my-loader](https://github.com/keyvanfatehi/node--my-loader)
+
+## Supported Databases
+
+* Sequelize
 
 All options into the constructor are in fact optional.
 
-## Configuration
+Configuration is passed into the module function as a single object.
 
-Configuration is passed in as a single object.
+All options are indeed optional. Pass in nothing in order to use sensible defaults.
 
-It is completely optional. Pass in nothing to use of sensible defaults.
-
-## Methods
-
-### createServer
-
-Takes no arguments.
-
-Returns returns a bluebird promise that resolves with the hapi server.
+The module function returns a bluebird promise that resolves with the hapi server.
 
 ## Example
 
