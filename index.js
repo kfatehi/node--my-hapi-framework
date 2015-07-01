@@ -24,36 +24,50 @@ module.exports = function(config) {
     }
   })
 
-  if (config.start) {
-    promise.then(function(server) {
-      var db = config.db;
-      if (db) {
-        // sequelize
-        if (db.sequelize) {
-          db.sequelize.options.logging = function(string) {
-            server.log(['db'], string)
-          }
-          if (db.sync) {
-            var force = null; try {
-              force = config.db.sync === 'force' || config.db.sync.force
-            } catch(e) {}
-            return db.sequelize.sync({ force: force }).then(function() {
-              return server;
-            });
-          }
-        }
-      }
-      return server;
-    }).then(function(server) {
-      server.start(function(err) {
-        if (err) throw err;
-        server.log([], 'Server running at: ' + server.info.uri);
+  function createLogFn(server, db) {
+    function databaseLogFn(string) {
+      server.log(db.tags || ['db'], string)
+    }
+    return databaseLogFn;
+  }
+
+  function setupSequelize(server, db) {
+    // make sequelize a good hapi logging citizen
+    db.sequelize.options.logging = createLogFn(server, db)
+    if (db.sync) {
+      // determine if database force sync is enabled
+      var force = db.sync === 'force' || db.sync.force;
+      return db.sequelize.sync({ force: force }).then(function() {
+        // always return server at the end of any promise chain
+        return server;
       });
-    }).catch(function(err) {
-      console.error(err.stack);
-      process.exit(1);
-    });
-  } else {
+    }
+  }
+
+  function setupDatabase(server, db) {
+    if (!db) return server;
+    // support sequelize
+    if (db.sequelize) {
+      return setupSequelize(server, db);
+    }
+  }
+
+  function setupServer() {
+    if (config.start) {
+      promise.then(function(server) {
+        return setupDatabase(server, config.db);
+      }).then(function(server) {
+        server.start(function(err) {
+          if (err) throw err;
+          server.log([], 'Server running at: ' + server.info.uri);
+        });
+      }).catch(function(err) {
+        console.error(err.stack);
+        process.exit(1);
+      });
+    }
     return promise;
   }
+
+  return setupServer();
 }
