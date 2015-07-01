@@ -1,0 +1,23 @@
+{
+  "name": "my-hapi-framework",
+  "version": "1.0.0",
+  "description": "a super simple hapi \"microframework\". supports sequelize",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keyvanfatehi/hapi-sql-framework.git"
+  },
+  "author": "Keyvan Fatehi <keyvanfatehi@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/keyvanfatehi/hapi-sql-framework/issues"
+  },
+  "homepage": "https://github.com/keyvanfatehi/hapi-sql-framework#readme",
+  "dependencies": {
+    "hapi": "^8.6.1",
+    "my-hapi-server": "^1.2.0"
+  }
+}
