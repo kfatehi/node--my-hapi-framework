@@ -25,7 +25,16 @@ module.exports = function(config) {
     }
   ), config.db);
 
-  if (config.repl) {
+  if (config.db && typeof config.db.seed === 'object' && config.db.seed[0]) {
+    var seed = config.db.seed[1]
+    if (typeof seed === 'function') { // can return promise or use node-style callback
+      return promise.spread(function(server, db) {
+        seedDatabase(db, seed);
+      });
+    } else {
+      throw new Error('Seed attribute, if set, must be in the form [bool shouldSeed, function seedFunction]');
+    }
+  } else if (config.repl) {
     var repl = require('repl');
     return promise.spread(function(server, db) {
       var r = repl.start({ prompt: "> " });
@@ -36,7 +45,7 @@ module.exports = function(config) {
     return promise.spread(function(server, database) {
       server.start(function(err) {
         if (err) throw err;
-        server.log([], 'Server running at: ' + server.info.uri);
+        server.log(['info'], 'Server running at: ' + server.info.uri);
       });
     });
   } else {
@@ -78,6 +87,30 @@ function setupSequelize(server, db) {
     return db.sequelize.sync({ force: force }).then(function() {
       // always return [server, ...] at the end of any promise chain
       return [server, db.sequelize];
+    });
+  }
+}
+
+function seedDatabase(db, seed) {
+  var fail = function(err) {
+    console.log(err.errors);
+    console.error(err.stack);
+    process.exit(1);
+  }
+  var success = function() {
+    console.log('Database seeded successfully');
+    process.exit(0);
+  }
+  var callback = function(err) {
+    if (err) fail(err);
+    else success();
+  };
+  var ret = seed(db, callback);
+  if (ret && typeof ret.then === 'function') {
+    ret.then(function() {
+      success();
+    }).catch(function(err) {
+      fail(err);
     });
   }
 }
