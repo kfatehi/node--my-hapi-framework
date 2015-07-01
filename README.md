@@ -8,6 +8,8 @@ A super simple hapi "microframework".
 * Autoload Hapi Authentication Strategies
 * Autoload Hapi Plugins
 * Autoload Hapi Routes
+* Database Seed Mode (Promise or Node-style)
+* REPL/Console Mode
 
 For more insight into how the auto-loading works see [my-loader](https://github.com/keyvanfatehi/node--my-loader)
 
@@ -61,6 +63,28 @@ module.exports = require('my-hapi-framework')({
     sync: { // existence of this key means we should sync the database
       force: process.env.FORCE_SYNC // force sync will be controlled by env var
     }
+  }
+})
+```
+
+## Advanced Example
+
+In this example, we enable the repl and database seeding capablities
+
+```js
+module.exports = require('my-hapi-framework')({
+  start: require.main === module,
+  path: require('path').join(__dirname, 'src'),
+  repl: process.argv[2] === 'console',
+  db: {
+    sequelize: require('./src/models').sequelize,
+    sync: { force: process.env.FORCE_SYNC },
+    seed: [process.argv[2] === 'seed', function(db, nodeStyleCallback) {
+      return db.models.User.createWithPassword('pass', {
+        email: 'admin@example.com',
+        roles: [ 'admin' ]
+      });
+    }]
   }
 })
 ```
