@@ -1,6 +1,6 @@
 var path = require('path');
 module.exports = function(config) {
-  var promise = setup(require('my-hapi-server')(
+  var promise = setup(require('./server')(
     config.path || path.dirname(require.main.filename), {
       server: config.server || {
         connections: { routes: { cors: true } }
@@ -29,7 +29,7 @@ module.exports = function(config) {
     var seed = config.db.seed[1]
     if (typeof seed === 'function') { // can return promise or use node-style callback
       return promise.spread(function(server, db) {
-        seedDatabase(db, seed);
+        return seedDatabase(db, seed);
       });
     } else {
       throw new Error('Seed attribute, if set, must be in the form [bool shouldSeed, function seedFunction]');
@@ -68,6 +68,7 @@ function setupDatabase(server, db) {
   if (!db) return [server];
   // support sequelize
   if (db.sequelize) {
+    console.log('setting up database', { db: 'sequelize' });
     return setupSequelize(server, db);
   }
 }
@@ -85,7 +86,9 @@ function setupSequelize(server, db) {
   if (db.sync) {
     // determine if database force sync is enabled
     var force = db.sync === 'force' || db.sync.force;
-    return db.sequelize.sync({ force: force }).then(function() {
+    var options = { force: !!force };
+    console.log('syncing database', options);
+    return db.sequelize.sync(options).then(function() {
       // always return [server, ...] at the end of any promise chain
       return [server, db.sequelize];
     });

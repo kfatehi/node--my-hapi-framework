@@ -1,6 +1,6 @@
 {
   "name": "my-hapi-framework",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "a super simple hapi \"microframework\". supports sequelize",
   "main": "index.js",
   "scripts": {
@@ -16,8 +16,12 @@
     "url": "https://github.com/keyvanfatehi/hapi-sql-framework/issues"
   },
   "homepage": "https://github.com/keyvanfatehi/hapi-sql-framework#readme",
+  "peerDependencies": {
+    "hapi": "8.x"
+  },
   "dependencies": {
-    "hapi": "^8.6.1",
-    "my-hapi-server": "^1.2.0"
+    "bluebird": "^2.9.32",
+    "bulk-require": "^0.2.1",
+    "lodash": "^3.10.0"
   }
 }
