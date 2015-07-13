@@ -11,8 +11,6 @@ A super simple hapi "microframework".
 * Database Seed Mode (Promise or Node-style)
 * REPL/Console Mode
 
-For more insight into how the auto-loading works see [my-loader](https://github.com/keyvanfatehi/node--my-loader)
-
 ## Supported Databases
 
 * Sequelize
