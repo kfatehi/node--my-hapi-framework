@@ -2,7 +2,7 @@ var path = require('path');
 module.exports = function(config) {
   var promise = setup(require('./server')(
     config.path || path.dirname(require.main.filename), {
-      server: config.server || {
+      server: config.server || {  
         connections: { routes: { cors: true } }
       },
       connection: config.connection || {
@@ -15,7 +15,9 @@ module.exports = function(config) {
         },
         routes: {
           glob: 'routes/**/*.js',
-          leaf: function(i) { return i.handler; }
+          leaf: function(i) {
+            return i.handler || (i.config && i.config.handler);
+          }
         },
         plugins: {
           glob: 'plugins/**/*.js',
