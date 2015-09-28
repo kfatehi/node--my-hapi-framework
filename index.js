@@ -42,6 +42,7 @@ module.exports = function(config) {
       var r = repl.start({ prompt: "> " });
       r.context.server = server;
       r.context.db = db
+      return [server, db];
     });
   } else if (config.start) {
     return promise.spread(function(server, database) {
